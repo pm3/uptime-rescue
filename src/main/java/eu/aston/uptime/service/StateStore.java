@@ -1,5 +1,7 @@
 package eu.aston.uptime.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,6 +43,10 @@ public class StateStore {
 
     public BaseState getState(String name) {
         return states.get(name);
+    }
+
+    public List<BaseState> getAllStates(){
+        return new ArrayList<>(states.values());
     }
 
     public void checkState() {

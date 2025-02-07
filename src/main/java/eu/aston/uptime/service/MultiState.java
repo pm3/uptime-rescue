@@ -52,24 +52,25 @@ public class MultiState extends BaseState {
             currentInstances = aktRunning;
             LOGGER.info("resource {} set init currentInstances {}", getName(), currentInstances);
         }
-        for(int i=lastStartedIndex; i<lastStartedIndex+items.size(); i++) {
+        int move = lastStartedIndex+1;
+        for(int i=0; i<items.size(); i++) {
             if(aktRunning<currentInstances) {
-                SingleState item = items.get(i%items.size());
+                SingleState item = items.get((i+move)%items.size());
                 if(item.getRunning()==0) {
                     try{
                         item.setRunning(true);
                         item.checkState();
                         aktRunning++;
+                        lastStartedIndex = i;
                     }catch (Exception e){
                         LOGGER.info("error start {} {}", item.getName(), e.getMessage());
                     }
-                    lastStartedIndex = i%items.size();
                 }
             }
         }
-        for(int i=lastStartedIndex+1; i<lastStartedIndex+1+items.size(); i++) {
+        for(int i=0; i<items.size(); i++) {
             if(aktRunning>currentInstances) {
-                SingleState item = items.get(i%items.size());
+                SingleState item = items.get((i+move)%items.size());
                 if(item.getRunning()==1) {
                     try{
                         item.setRunning(false);
@@ -78,7 +79,6 @@ public class MultiState extends BaseState {
                     }catch (Exception e){
                         LOGGER.warn("error stop {} {}", item.getName(), e.getMessage());
                     }
-                    lastStartedIndex = i%items.size();
                 }
             }
         }

@@ -34,12 +34,12 @@ public class FlowRunner {
         StringBuilder bashScript = new StringBuilder();
         for(Map.Entry<String, String> entry : parameters.entrySet()) {
             if(entry.getKey().startsWith("env.")) {
-                bashScript.append("export ").append(entry.getKey().substring(4)).append("=").append(entry.getValue()).append("\n");
+                bashScript.append("export ").append(entry.getKey().substring(4)).append("=\"").append(entry.getValue()).append("\"\n");
             }
         }
         for(Map.Entry<String, String> entry : parameters.entrySet()) {
             if(entry.getKey().startsWith("var.")) {
-                bashScript.append(entry.getKey().substring(4)).append("=").append(entry.getValue()).append("\n");
+                bashScript.append(entry.getKey().substring(4)).append("=\"").append(entry.getValue()).append("\"\n");
             }
         }
         bashScript.append(script2);

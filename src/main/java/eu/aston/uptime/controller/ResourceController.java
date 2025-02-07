@@ -1,5 +1,6 @@
 package eu.aston.uptime.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import eu.aston.uptime.model.ResourceStateData;
@@ -27,11 +28,18 @@ public class ResourceController {
         this.stateStore = stateStore;
     }
 
+    @Get("/state")
+    public List<ResourceStateData> fetchAll() {
+        return stateStore.getAllStates().stream()
+                .map(s->new ResourceStateData(s.getName(), s.getType(), s.getRunning(), s.isPending()))
+                .toList();
+    }
+
     @Get("/state/{name}")
     public ResourceStateData fetchResource(@PathVariable String name) {
         BaseState state = stateStore.getState(name);       
         if(state != null) {
-            return new ResourceStateData(name, state.getType(), state.getRunning());
+            return new ResourceStateData(name, state.getType(), state.getRunning(), state.isPending());
         }
         throw new HttpStatusException(HttpStatus.NOT_FOUND, "Resource not found");
     }

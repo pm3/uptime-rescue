@@ -11,6 +11,7 @@ public abstract class BaseState {
     protected final File workDir;
     protected final StateStore stateStore;
     protected final Map<String, String> params;
+    private boolean pending;
 
     public BaseState(Resource resource, StateStore stateStore) {
         this.resource = resource;
@@ -24,10 +25,15 @@ public abstract class BaseState {
     }
 
     public void runNow(String script, Map<String, String> parameters){
-        if(resource.getAuth()!=null && stateStore.getState(resource.getAuth()) instanceof JobState jobState) {
-            jobState.runJobAsAuth();
+        this.pending = true;
+        try{
+            if(resource.getAuth()!=null && stateStore.getState(resource.getAuth()) instanceof JobState jobState) {
+                jobState.runJobAsAuth();
+            }
+            stateStore.getFlowRunner().run(resource.getName(), script, parameters, workDir, resource.getFiles());
+        } finally {
+            this.pending = false;
         }
-        stateStore.getFlowRunner().run(resource.getName(), script, parameters, workDir, resource.getFiles());
     }
 
     public abstract void checkState();
@@ -40,5 +46,9 @@ public abstract class BaseState {
 
     public String getType() {
         return resource.getClass().getSimpleName();
+    }
+
+    public boolean isPending() {
+        return pending;
     }
 }
